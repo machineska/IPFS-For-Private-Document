@@ -1,3 +1,0 @@
-C:/Program Files (x86)/Odoo 14/python/python.exe" "C:/Program Files (x86)/Odoo 14/server/odoo-bin" scaffold alfnet "C:/Program Files (x86)/Odoo 14/server/odoo/addons
-
-C:/Program Files/Odoo/python/python.exe" "C:/Program Files/Odoo/server/odoo-bin" scaffold cuci_helm "C:/Program Files/Odoo/server/odoo/addons"
