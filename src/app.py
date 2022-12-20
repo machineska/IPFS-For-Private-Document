@@ -5,17 +5,19 @@ from sqlalchemy import ForeignKey, desc, asc
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date
+import cv2
 import ipfsApi
 import os
 import webbrowser
 import pdfkit
 
+
 UPLOAD_FOLDER = r'static\uploads'
 
 app = Flask(__name__)
 app.secret_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTFTTTRSUTlfLS1IVEpGM0QiLCJpYXQiOjE2NjI5ODc0Nzd9.mCvSd2o2vw5Gs7grkBLkW75dlgVcJ-aiqMzfVUvG-q4'
-# app.config['SQLALCHEMY_DATABASE_URI']='postgresql://Asus:admin@localhost/flask_db'
-app.config['SQLALCHEMY_DATABASE_URI']='postgresql://kevin:123456@localhost/flask_db'
+# app.config['SQLALCHEMY_DATABASE_URI']='postgresql://kevin:123456@localhost/flask_db'
+app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:OBel71Uv5Q5FPHWZCDgr@containers-us-west-168.railway.app:6316/railway'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db = SQLAlchemy(app)
@@ -27,7 +29,8 @@ class User(db.Model):
   email=db.Column(db.String(40))
   password=db.Column(db.String(40))
  
-  def __init__(self,name,email,password):
+  def __init__(self,id,name,email,password):
+    self.id=id
     self.name=name
     self.email=email
     self.password=password
@@ -41,7 +44,8 @@ class UploadFile(db.Model):
   file_hash=db.Column(db.String(120))
   pin_status=db.Column(db.Integer)
  
-  def __init__(self,id_user,file_name,date,file_hash,pin_status):
+  def __init__(self,id,id_user,file_name,date,file_hash,pin_status):
+    self.id=id
     self.id_user=id_user
     self.file_name=file_name
     self.date=date
@@ -54,11 +58,12 @@ def register():
 
 @app.route('/register-submit', methods = ['POST'])
 def register_submit():
+    rows = db.session.query(User).count()
     name = request.form['name']
     email = request.form['email']
     password = request.form['password']
 
-    user = User(name, email, password)
+    user = User(rows+1, name, email, password)
     db.create_all()
     db.session.add(user)
     db.session.commit()
@@ -122,9 +127,10 @@ def upload_file():
     api = ipfsApi.Client('127.0.0.1', 5001)
     res = api.add(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
     file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
+    rows = db.session.query(UploadFile).count()
     if not file_data:
       if 'user_id' in session:
-        user = UploadFile(session['user_id'], secure_filename(f.filename), date.today(), res['Hash'], 1)
+        user = UploadFile(rows+1, session['user_id'], secure_filename(f.filename), date.today(), res['Hash'], 1)
         db.session.add(user)
         db.session.commit()
       return redirect('/')
@@ -193,14 +199,14 @@ def print_from_hash():
     
 @app.route('/direct-print')
 def direct_print():
+    hash_file = request.args.get('file_hash')
+    file_data = UploadFile.query.filter(UploadFile.file_hash == hash_file).first().file_hash
+    qr_url = f"http://api.qrserver.com/v1/create-qr-code/?data=https://ipfs.io/ipfs/{file_data}?filename={file_data}&size=200x200"
+    doc_url = f"https://ipfs.io/ipfs/{file_data}"
     # hash_file = request.args.get('file_hash')
     # file_data = UploadFile.query.filter(UploadFile.file_hash == hash_file).first().file_hash
-    # qr_url = f"http://api.qrserver.com/v1/create-qr-code/?data=https://ipfs.io/ipfs/{file_data}?filename={file_data}&size=200x200"
-    # doc_url = f"https://ipfs.io/ipfs/{file_data}"
-    # hash_file = request.args.get('file_hash')
-    # file_data = UploadFile.query.filter(UploadFile.file_hash == hash_file).first().file_hash
-    qr_url = f"http://api.qrserver.com/v1/create-qr-code/?data=https://ipfs.io/ipfs/QmauYxe2pwhiRShKkW4GdzN9498FpePAWEimPK5v3tVPY5?filename=QmauYxe2pwhiRShKkW4GdzN9498FpePAWEimPK5v3tVPY5&size=200x200"
-    doc_url = f"https://ipfs.io/ipfs/QmauYxe2pwhiRShKkW4GdzN9498FpePAWEimPK5v3tVPY5"
+    # qr_url = f"http://api.qrserver.com/v1/create-qr-code/?data=https://ipfs.io/ipfs/QmauYxe2pwhiRShKkW4GdzN9498FpePAWEimPK5v3tVPY5?filename=QmauYxe2pwhiRShKkW4GdzN9498FpePAWEimPK5v3tVPY5&size=200x200"
+    # doc_url = f"https://ipfs.io/ipfs/QmauYxe2pwhiRShKkW4GdzN9498FpePAWEimPK5v3tVPY5"
     # rendered = render_template('file.html', qr = qr_url, doc = doc_url)
     # path_wkhtmltopdf = r"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
     # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
@@ -232,6 +238,36 @@ def verify_file():
       api = ipfsApi.Client('127.0.0.1', 5001)
       res = api.add(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
       file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
+      
+      if not file_data:
+        flash(f"file asli tidak ditemukan")
+        return redirect('/verifier')
+      else:
+        # tgl = UploadFile.query.filter_by(file_hash=res['Hash']).first().date
+        tgl = file_data.date
+        nfile = file_data.file_name
+        user_data = User.query.filter_by(id=session['user_id']).first().name
+        flash(f"file asli terverifikasi!, , file name: {nfile}, pemilik: {user_data}, tanggal upload: {tgl}")
+        return redirect('/verifier')
+    except:
+      flash(f"something wrong about the file checker")
+      return redirect('/verifier')
+    
+@app.route('/qr-verifier', methods = ['POST'])
+def verify_qr():
+    try:
+      f = request.files['file2']
+      f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
+      fpath = r'C:\D_Drive\anxd\TA\IPFS-Flask-Web-Simple\static\uploads\%s' % (secure_filename(f.filename))
+      img = cv2.imread(fpath, 0)
+      det = cv2.QRCodeDetector()
+      try:
+        val, pts, st = det.detectAndDecode(img)
+        hashf = val.split('/')[-1].split('?')[0]
+        file_data = UploadFile.query.filter_by(file_hash=hashf).first()
+      except:
+        flash(f"QR tidak dapat dibaca")
+        return redirect('/verifier')
       
       if not file_data:
         flash(f"file asli tidak ditemukan")

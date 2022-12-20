@@ -85,7 +85,7 @@
                 <p class="has-text-centered is-size-1" style="margin-bottom:10px;">or</p>
                 <div class="box">
                     <span class="subtitle">Upload QR code document</span>
-                    <form enctype="multipart/form-data" action="http://api.qrserver.com/v1/read-qr-code/" method="POST">
+                    <form enctype="multipart/form-data" action="http://localhost:5000/qr-verifier" method="POST">
                         <input type="hidden" name="MAX_FILE_SIZE" value="1048576" />
                         <input class="button is-medium" name="file2" type="file" />
                         <input class="button is-pulled-right is-medium is-primary" type="submit" onclick="enableButton2()" value="Read QR code" />
@@ -110,7 +110,7 @@
         <footer class="footer">
             <div class="content has-text-centered">
                 <p>
-                    <strong>InterPlanetary File System for Private Document</strong> by <a href="https://linkedin.com/in/kevin-refinaldi">Kevin Refinaldi Berlin</a>.
+                    <strong>InterPlanetary File System for Private Document  </strong>
                 </p>
             </div>
         </footer>
