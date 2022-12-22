@@ -54,3 +54,4 @@ werkzeug==2.2.2
     # via
     #   -r requirements.in
     #   flask
+opencv_python==4.6.0.66
