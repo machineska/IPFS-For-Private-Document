@@ -126,7 +126,7 @@ def logout():
 @app.route('/uploader', methods = ['POST'])
 def upload_file():
     f = request.files['file']
-    f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
+    # f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
     api = ipfsApi.Client('127.0.0.1', 5001)
     res = api.add(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
     file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
@@ -238,7 +238,7 @@ def find_to_ipfs():
 def verify_file():
     try:
       f = request.files['file1']
-      f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
+      # f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
       api = ipfsApi.Client('127.0.0.1', 5001)
       res = api.add(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
       file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
