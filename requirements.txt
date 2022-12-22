@@ -56,3 +56,4 @@ werkzeug==2.2.2
     #   -r requirements.in
     #   flask
 # opencv_python==4.6.0.66
+psycopg2-binary==2.9.5
