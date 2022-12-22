@@ -6,10 +6,10 @@ from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date
 # import cv2
-import ipfsApi
+import ipfsapi
 import os
 import webbrowser
-import pdfkit
+# import pdfkit
 
 
 UPLOAD_FOLDER = r'static\uploads'
@@ -127,7 +127,7 @@ def logout():
 def upload_file():
     f = request.files['file']
     # f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
-    api = ipfsApi.Client('127.0.0.1', 5001)
+    api = ipfsapi.Client('127.0.0.1', 5001)
     res = api.add(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
     file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
     rows = db.session.query(UploadFile).count()
@@ -175,7 +175,7 @@ def pin_file():
     hash_file = request.args.get('file_hash')
     file_data = UploadFile.query.filter(UploadFile.file_hash == hash_file).first()
     file_data.pin_status = 1
-    # api = ipfsApi.Client('127.0.0.1', 5001)
+    # api = ipfsapi.Client('127.0.0.1', 5001)
     # api.pin_add(id_file[:10])
     db.session.commit()
     return redirect('/')
@@ -183,7 +183,7 @@ def pin_file():
 @app.route('/rm-pin-file')
 def rm_pin_file():
     hash_file = request.args.get('file_hash')
-    api = ipfsApi.Client('127.0.0.1', 5001)
+    api = ipfsapi.Client('127.0.0.1', 5001)
     # api.pin_rm(hash_file)
     file_data = UploadFile.query.filter(UploadFile.file_hash == hash_file).first()
     file_data.pin_status = 0
@@ -239,7 +239,7 @@ def verify_file():
     try:
       f = request.files['file1']
       # f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
-      api = ipfsApi.Client('127.0.0.1', 5001)
+      api = ipfsapi.Client('127.0.0.1', 5001)
       res = api.add(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
       file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
       
@@ -288,5 +288,5 @@ def verify_qr():
       flash(f"something wrong about the file checker")
       return redirect('/verifier')
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)
