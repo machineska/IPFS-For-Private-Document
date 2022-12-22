@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date
 # import cv2
-import ipfsApipip
+import ipfsApi
 import os
 import webbrowser
 import pdfkit
