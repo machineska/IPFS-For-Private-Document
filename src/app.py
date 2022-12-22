@@ -288,5 +288,5 @@ def verify_qr():
       flash(f"something wrong about the file checker")
       return redirect('/verifier')
 
-# if __name__ == '__main__':
-#     app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True, port=os.getenv("PORT", default=5000))
