@@ -17,7 +17,7 @@ UPLOAD_FOLDER = r'static\uploads'
 app = Flask(__name__)
 app.secret_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTFTTTRSUTlfLS1IVEpGM0QiLCJpYXQiOjE2NjI5ODc0Nzd9.mCvSd2o2vw5Gs7grkBLkW75dlgVcJ-aiqMzfVUvG-q4'
 # app.config['SQLALCHEMY_DATABASE_URI']='postgresql://kevin:123456@localhost/flask_db'
-app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:OBel71Uv5Q5FPHWZCDgr@containers-us-west-168.railway.app:6316/railway'
+app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:pymgyhOb8epbm5Bjw0aq@containers-us-west-162.railway.app:6998/railway'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db = SQLAlchemy(app)
@@ -28,7 +28,8 @@ class User(db.Model):
   name=db.Column(db.String(40))
   email=db.Column(db.String(40))
   password=db.Column(db.String(40))
- 
+  
+  # def __init__(self,name,email,password): 
   def __init__(self,id,name,email,password):
     self.id=id
     self.name=name
@@ -44,6 +45,7 @@ class UploadFile(db.Model):
   file_hash=db.Column(db.String(120))
   pin_status=db.Column(db.Integer)
  
+  # def __init__(self,id_user,file_name,date,file_hash,pin_status):
   def __init__(self,id,id_user,file_name,date,file_hash,pin_status):
     self.id=id
     self.id_user=id_user
@@ -63,6 +65,7 @@ def register_submit():
     email = request.form['email']
     password = request.form['password']
 
+    # user = User(name, email, password)
     user = User(rows+1, name, email, password)
     db.create_all()
     db.session.add(user)
@@ -130,6 +133,7 @@ def upload_file():
     rows = db.session.query(UploadFile).count()
     if not file_data:
       if 'user_id' in session:
+        # user = UploadFile(session['user_id'], secure_filename(f.filename), date.today(), res['Hash'], 1)
         user = UploadFile(rows+1, session['user_id'], secure_filename(f.filename), date.today(), res['Hash'], 1)
         db.session.add(user)
         db.session.commit()
@@ -138,7 +142,7 @@ def upload_file():
       hash = res['Hash']
       flash(f"{hash} sudah ada")
       return redirect('/')
-    
+
 @app.route('/update/<int:id>', methods = ['POST', 'GET'])
 def update(id):
     # id_file = request.args.get('id')
@@ -246,7 +250,7 @@ def verify_file():
         # tgl = UploadFile.query.filter_by(file_hash=res['Hash']).first().date
         tgl = file_data.date
         nfile = file_data.file_name
-        user_data = User.query.filter_by(id=session['user_id']).first().name
+        user_data = User.query.filter_by(id=file_data.id_user).first().name
         flash(f"file asli terverifikasi!, , file name: {nfile}, pemilik: {user_data}, tanggal upload: {tgl}")
         return redirect('/verifier')
     except:
@@ -276,7 +280,7 @@ def verify_qr():
         # tgl = UploadFile.query.filter_by(file_hash=res['Hash']).first().date
         tgl = file_data.date
         nfile = file_data.file_name
-        user_data = User.query.filter_by(id=session['user_id']).first().name
+        user_data = User.query.filter_by(id=file_data.id_user).first().name
         flash(f"file asli terverifikasi!, , file name: {nfile}, pemilik: {user_data}, tanggal upload: {tgl}")
         return redirect('/verifier')
     except:
