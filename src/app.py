@@ -5,7 +5,7 @@ from sqlalchemy import ForeignKey, desc, asc
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
 from datetime import date
-import cv2
+# import cv2
 import ipfsApi
 import os
 import webbrowser
@@ -260,29 +260,30 @@ def verify_file():
 @app.route('/qr-verifier', methods = ['POST'])
 def verify_qr():
     try:
-      f = request.files['file2']
-      f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
-      fpath = r'C:\D_Drive\anxd\TA\IPFS-Flask-Web-Simple\static\uploads\%s' % (secure_filename(f.filename))
-      img = cv2.imread(fpath, 0)
-      det = cv2.QRCodeDetector()
-      try:
-        val, pts, st = det.detectAndDecode(img)
-        hashf = val.split('/')[-1].split('?')[0]
-        file_data = UploadFile.query.filter_by(file_hash=hashf).first()
-      except:
-        flash(f"QR tidak dapat dibaca")
-        return redirect('/verifier')
+      # f = request.files['file2']
+      # f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
+      # fpath = r'C:\D_Drive\anxd\TA\IPFS-Flask-Web-Simple\static\uploads\%s' % (secure_filename(f.filename))
+      # img = cv2.imread(fpath, 0)
+      # det = cv2.QRCodeDetector()
+      # try:
+      #   val, pts, st = det.detectAndDecode(img)
+      #   hashf = val.split('/')[-1].split('?')[0]
+      #   file_data = UploadFile.query.filter_by(file_hash=hashf).first()
+      # except:
+      #   flash(f"QR tidak dapat dibaca")
+      #   return redirect('/verifier')
       
-      if not file_data:
-        flash(f"file asli tidak ditemukan")
-        return redirect('/verifier')
-      else:
-        # tgl = UploadFile.query.filter_by(file_hash=res['Hash']).first().date
-        tgl = file_data.date
-        nfile = file_data.file_name
-        user_data = User.query.filter_by(id=file_data.id_user).first().name
-        flash(f"file asli terverifikasi!, , file name: {nfile}, pemilik: {user_data}, tanggal upload: {tgl}")
-        return redirect('/verifier')
+      # if not file_data:
+      #   flash(f"file asli tidak ditemukan")
+      #   return redirect('/verifier')
+      # else:
+      #   # tgl = UploadFile.query.filter_by(file_hash=res['Hash']).first().date
+      #   tgl = file_data.date
+      #   nfile = file_data.file_name
+      #   user_data = User.query.filter_by(id=file_data.id_user).first().name
+      #   flash(f"file asli terverifikasi!, , file name: {nfile}, pemilik: {user_data}, tanggal upload: {tgl}")
+      flash(f"QR verifier is not ready yet")
+      return redirect('/verifier')
     except:
       flash(f"something wrong about the file checker")
       return redirect('/verifier')
