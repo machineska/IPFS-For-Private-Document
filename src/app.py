@@ -12,8 +12,6 @@ import webbrowser
 # import pdfkit
 
 
-UPLOAD_FOLDER = r'C:\D_Drive\anxd\file'
-
 app = Flask(__name__)
 app.secret_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTFTTTRSUTlfLS1IVEpGM0QiLCJpYXQiOjE2NjI5ODc0Nzd9.mCvSd2o2vw5Gs7grkBLkW75dlgVcJ-aiqMzfVUvG-q4'
 # app.config['SQLALCHEMY_DATABASE_URI']='postgresql://kevin:123456@localhost/flask_db'
@@ -126,9 +124,8 @@ def logout():
 @app.route('/uploader', methods = ['POST'])
 def upload_file():
     f = request.files['file']
-    f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
     api = ipfsapi.Client('0.0.0.0', 5001)
-    res = api.add(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
+    res = api.add(r'C:\Users\super\Downloads', secure_filename(f.filename))
     file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
     rows = db.session.query(UploadFile).count()
     if not file_data:
