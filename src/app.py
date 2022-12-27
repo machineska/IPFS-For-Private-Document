@@ -16,7 +16,7 @@ app = Flask(__name__)
 app.secret_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTFTTTRSUTlfLS1IVEpGM0QiLCJpYXQiOjE2NjI5ODc0Nzd9.mCvSd2o2vw5Gs7grkBLkW75dlgVcJ-aiqMzfVUvG-q4'
 # app.config['SQLALCHEMY_DATABASE_URI']='postgresql://kevin:123456@localhost/flask_db'
 app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:pymgyhOb8epbm5Bjw0aq@containers-us-west-162.railway.app:6998/railway'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db = SQLAlchemy(app)
 
