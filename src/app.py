@@ -12,7 +12,7 @@ import webbrowser
 # import pdfkit
 
 
-UPLOAD_FOLDER = r'static\uploads'
+UPLOAD_FOLDER = r'C:\D_Drive\anxd\file'
 
 app = Flask(__name__)
 app.secret_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTFTTTRSUTlfLS1IVEpGM0QiLCJpYXQiOjE2NjI5ODc0Nzd9.mCvSd2o2vw5Gs7grkBLkW75dlgVcJ-aiqMzfVUvG-q4'
