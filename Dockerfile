@@ -19,6 +19,5 @@ FROM python:3.10.8-slim-buster
 ADD requirements.txt requirements.txt   
 RUN pip install -r requirements.txt
 
-ADD /templates /templates
-ADD app.py app.py
+ADD /src /src
 
