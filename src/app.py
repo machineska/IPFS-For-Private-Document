@@ -125,7 +125,7 @@ def logout():
 def upload_file():
     f = request.files['file']
     if f.filename.endswith(('.png', '.jpg', '.jpeg', '.pdf')):
-      api = ipfsapi.Client('0.0.0.0', 5001)
+      api = ipfsapi.Client('0.0.0.0', 5000)
       res = api.add(r'C:\Users\super\Downloads', secure_filename(f.filename))
       file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
       rows = db.session.query(UploadFile).count()
