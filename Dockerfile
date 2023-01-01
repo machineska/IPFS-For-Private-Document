@@ -1,3 +1,4 @@
+FROM golang:1.19.1-buster
 RUN DOCKER_BUILDKIT=0  docker build
 RUN mkdir /tmp/ipfs-docker-staging
 RUN mkdir /tmp/ipfs-docker-data
