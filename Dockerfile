@@ -16,5 +16,5 @@ CMD docker exec ipfs_host swarm peers
 
 FROM python:3.10.8-slim-buster
 
-
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+RUN gunicorn src.app:app
