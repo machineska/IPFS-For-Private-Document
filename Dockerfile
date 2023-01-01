@@ -20,7 +20,7 @@ ADD requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 ADD src/app.py /rc/app.py
-CMD python src/app.py
+RUN python src/app.py
 
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
 CMD gunicorn src.app:app
