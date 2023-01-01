@@ -16,5 +16,8 @@ CMD docker exec ipfs_host swarm peers
 
 FROM python:3.10.8-slim-buster
 
+ADD requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
 CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
 CMD gunicorn src.app:app
