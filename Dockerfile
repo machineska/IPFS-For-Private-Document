@@ -20,4 +20,4 @@ ADD requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
 ADD /src /src
-
+ADD /static /static
