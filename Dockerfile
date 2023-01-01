@@ -1,3 +1,4 @@
+Run DOCKER_BUILDKIT=0  docker build
 Run mkdir /tmp/ipfs-docker-staging
 Run mkdir /tmp/ipfs-docker-data
 Run docker pull ipfs/kubo
