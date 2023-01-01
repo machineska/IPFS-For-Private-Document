@@ -12,13 +12,13 @@ import webbrowser
 # import pdfkit
 
 
-app = Flask(__name__)
-app.secret_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTFTTTRSUTlfLS1IVEpGM0QiLCJpYXQiOjE2NjI5ODc0Nzd9.mCvSd2o2vw5Gs7grkBLkW75dlgVcJ-aiqMzfVUvG-q4'
-# app.config['SQLALCHEMY_DATABASE_URI']='postgresql://kevin:123456@localhost/flask_db'
-app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:pymgyhOb8epbm5Bjw0aq@containers-us-west-162.railway.app:6998/railway'
-# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+application = Flask(__name__)
+application.secret_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTFTTTRSUTlfLS1IVEpGM0QiLCJpYXQiOjE2NjI5ODc0Nzd9.mCvSd2o2vw5Gs7grkBLkW75dlgVcJ-aiqMzfVUvG-q4'
+# application.config['SQLALCHEMY_DATABASE_URI']='postgresql://kevin:123456@localhost/flask_db'
+application.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:pymgyhOb8epbm5Bjw0aq@containers-us-west-162.railway.application:6998/railway'
+# application.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-db = SQLAlchemy(app)
+db = SQLAlchemy(application)
 
 class User(db.Model): 
   __tablename__='user'
@@ -52,11 +52,11 @@ class UploadFile(db.Model):
     self.file_hash=file_hash
     self.pin_status=pin_status
 
-@app.route('/register')
+@application.route('/register')
 def register():
     return render_template('register.html')
 
-@app.route('/register-submit', methods = ['POST'])
+@application.route('/register-submit', methods = ['POST'])
 def register_submit():
     rows = db.session.query(User).count()
     name = request.form['name']
@@ -70,11 +70,11 @@ def register_submit():
     db.session.commit()
     return redirect(url_for('login'))
 
-@app.route('/login')
+@application.route('/login')
 def login():
     return render_template('login.html')
 
-@app.route('/login-submit', methods = ['POST'])
+@application.route('/login-submit', methods = ['POST'])
 def login_submit():
     email = request.form['email']
     password = request.form['password']
@@ -87,7 +87,7 @@ def login_submit():
       flash("Gagal login\nEmail atau Password salah")
       return redirect('/login')
 
-@app.route('/')
+@application.route('/')
 def home():
     try:
       user_data = User.query.filter_by(id=session['user_id']).first().name
@@ -100,7 +100,7 @@ def home():
     else:
       return redirect(url_for('login'))
     
-@app.route('/filter-pin')
+@application.route('/filter-pin')
 def filter_pin():
     user_data = User.query.filter_by(id=session['user_id']).first().name
     if 'user_id' in session:
@@ -108,7 +108,7 @@ def filter_pin():
       c = files_data.count()
     return render_template('upload.html', datas = files_data, user = user_data, c = c)
 
-@app.route('/filter-unpin')
+@application.route('/filter-unpin')
 def filter_unpin():
     user_data = User.query.filter_by(id=session['user_id']).first().name
     if 'user_id' in session:
@@ -116,12 +116,12 @@ def filter_unpin():
       c = files_data.count()
     return render_template('upload.html', datas = files_data, user = user_data, c = c)
 
-@app.route("/logout")
+@application.route("/logout")
 def logout():
     session.pop("user_id", None)
     return redirect(url_for("login"))
 
-@app.route('/uploader', methods = ['POST'])
+@application.route('/uploader', methods = ['POST'])
 def upload_file():
     f = request.files['file']
     if f.filename.endswith(('.png', '.jpg', '.jpeg', '.pdf')):
@@ -144,13 +144,13 @@ def upload_file():
       flash("ekstensi file harus berbentuk pdf, png, jpg, atau jpeg")
       return redirect('/')
 
-@app.route('/update/<int:id>', methods = ['POST', 'GET'])
+@application.route('/update/<int:id>', methods = ['POST', 'GET'])
 def update(id):
     # id_file = request.args.get('id')
     file_to_update = UploadFile.query.get_or_404(id)
     return render_template('update.html', file_to_update=file_to_update)
       
-@app.route('/edit-file/<int:id>', methods = ['POST', 'GET'])
+@application.route('/edit-file/<int:id>', methods = ['POST', 'GET'])
 def edit_file(id):
     file_to_update = UploadFile.query.get_or_404(id)
     if request.method == "POST":
@@ -164,14 +164,14 @@ def edit_file(id):
     else:
         return render_template('update.html', file_to_update=file_to_update)
   
-@app.route('/delete-file')
+@application.route('/delete-file')
 def delete_file():
     id_file = request.args.get('id')
     UploadFile.query.filter(UploadFile.id == id_file).delete()
     db.session.commit()
     return redirect('/')
 
-@app.route('/pin-file')
+@application.route('/pin-file')
 def pin_file():
     hash_file = request.args.get('file_hash')
     file_data = UploadFile.query.filter(UploadFile.file_hash == hash_file).first()
@@ -181,7 +181,7 @@ def pin_file():
     db.session.commit()
     return redirect('/')
 
-@app.route('/rm-pin-file')
+@application.route('/rm-pin-file')
 def rm_pin_file():
     hash_file = request.args.get('file_hash')
     api = ipfsapi.Client('0.0.0.0', 5001)
@@ -191,18 +191,18 @@ def rm_pin_file():
     db.session.commit()
     return redirect('/')
   
-@app.route('/print-file')
+@application.route('/print-file')
 def print_file():
     return render_template('print.html')
   
-@app.route('/print-from-hash', methods = ['POST'])
+@application.route('/print-from-hash', methods = ['POST'])
 def print_from_hash():
     fileHash = request.form['hash']
     qr_url = f"http://api.qrserver.com/v1/create-qr-code/?data=https://ipfs.io/ipfs/{fileHash}?filename={fileHash}&size=200x200"
     doc_url = f"https://ipfs.io/ipfs/{fileHash}"
     return render_template('file.html', qr = qr_url, doc = doc_url)
     
-@app.route('/direct-print')
+@application.route('/direct-print')
 def direct_print():
     hash_file = request.args.get('file_hash')
     file_data = UploadFile.query.filter(UploadFile.file_hash == hash_file).first().file_hash
@@ -217,31 +217,31 @@ def direct_print():
     # config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
     # pdf = pdfkit.from_string(rendered, configuration=config)
     # response = make_response(pdf)
-    # response.headers['Content-Type'] = 'application/pdf'
+    # response.headers['Content-Type'] = 'applicationlication/pdf'
     # response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
     return render_template('file.html', qr = qr_url, doc = doc_url)
 
-@app.route('/find')
+@application.route('/find')
 def find():
     return render_template('find.html')
   
-@app.route('/verifier')
+@application.route('/verifier')
 def verifier():
     return render_template('verifier.html')
 
-@app.route('/find-ipfs', methods = ['POST'])
+@application.route('/find-ipfs', methods = ['POST'])
 def find_to_ipfs():
     fileHash = request.form['text']
     webbrowser.open(f"https://ipfs.io/ipfs/{fileHash}")
     return redirect("/")
   
-@app.route('/file-verifier', methods = ['POST'])
+@application.route('/file-verifier', methods = ['POST'])
 def verify_file():
     try:
       f = request.files['file1']
-      f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
+      f.save(os.path.join(application.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
       api = ipfsapi.Client('0.0.0.0', 5001)
-      res = api.add(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
+      res = api.add(os.path.join(application.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
       file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
       
       if not file_data:
@@ -258,11 +258,11 @@ def verify_file():
       flash(f"something wrong about the file checker")
       return redirect('/verifier')
     
-@app.route('/qr-verifier', methods = ['POST'])
+@application.route('/qr-verifier', methods = ['POST'])
 def verify_qr():
     try:
       # f = request.files['file2']
-      # f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
+      # f.save(os.path.join(application.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
       # fpath = r'C:\D_Drive\anxd\TA\IPFS-Flask-Web-Simple\static\uploads\%s' % (secure_filename(f.filename))
       # img = cv2.imread(fpath, 0)
       # det = cv2.QRCodeDetector()
@@ -290,4 +290,4 @@ def verify_qr():
       return redirect('/verifier')
 
 if __name__ == '__main__':
-    app.run(debug=True, port=os.getenv("PORT", default=5000))
+    application.run(debug=True, port=os.getenv("PORT", default=5000))
