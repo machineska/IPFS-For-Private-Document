@@ -3,7 +3,10 @@ RUN apt-get update && apt-get install -y \
   libssl-dev \
   ca-certificates \
   fuse
-RUN DOCKER_BUILDKIT=0  docker build
+
+RUN export DOCKER_BUILDKIT=0
+RUN export COMPOSE_DOCKER_CLI_BUILD=0
+
 RUN mkdir /tmp/ipfs-docker-staging
 RUN mkdir /tmp/ipfs-docker-data
 RUN docker pull ipfs/kubo
