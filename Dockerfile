@@ -19,4 +19,4 @@ FROM python:3.10.8-slim-buster
 ADD requirements.txt requirements.txt   
 RUN pip install -r requirements.txt
 
-RUN gunicorn src.app:app
+CMD gunicorn src.app:app
