@@ -127,7 +127,7 @@ def upload_file():
     f = request.files['file']
     if f.filename.endswith(('.png', '.jpg', '.jpeg', '.pdf', '.txt')):
       f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
-      api = ipfsapi.Client('0.0.0.0', 5001)
+      api = ipfsapi.Client('0.0.0.0', 5000)
       res = api.add(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
       file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
       rows = db.session.query(UploadFile).count()
