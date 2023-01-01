@@ -124,20 +124,24 @@ def logout():
 @app.route('/uploader', methods = ['POST'])
 def upload_file():
     f = request.files['file']
-    api = ipfsapi.Client('0.0.0.0', 5001)
-    res = api.add(r'C:\Users\super\Downloads', secure_filename(f.filename))
-    file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
-    rows = db.session.query(UploadFile).count()
-    if not file_data:
-      if 'user_id' in session:
-        # user = UploadFile(session['user_id'], secure_filename(f.filename), date.today(), res['Hash'], 1)
-        user = UploadFile(rows+1, session['user_id'], secure_filename(f.filename), date.today(), res['Hash'], 1)
-        db.session.add(user)
-        db.session.commit()
-      return redirect('/')
+    if f.filename.endswith(('.png', '.jpg', '.jpeg', '.pdf')):
+      api = ipfsapi.Client('0.0.0.0', 5001)
+      res = api.add(r'C:\Users\super\Downloads', secure_filename(f.filename))
+      file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
+      rows = db.session.query(UploadFile).count()
+      if not file_data:
+        if 'user_id' in session:
+          # user = UploadFile(session['user_id'], secure_filename(f.filename), date.today(), res['Hash'], 1)
+          user = UploadFile(rows+1, session['user_id'], secure_filename(f.filename), date.today(), res['Hash'], 1)
+          db.session.add(user)
+          db.session.commit()
+        return redirect('/')
+      else:
+        hash = res['Hash']
+        flash(f"{hash} sudah ada")
+        return redirect('/')
     else:
-      hash = res['Hash']
-      flash(f"{hash} sudah ada")
+      flash("ekstensi file harus berbentuk pdf, png, jpg, atau jpeg")
       return redirect('/')
 
 @app.route('/update/<int:id>', methods = ['POST', 'GET'])
