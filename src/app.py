@@ -21,7 +21,7 @@ app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:pymgyhOb8epbm5Bjw0a
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 with open("/tmp/output.log", "a") as output:
-    subprocess.call("docker run -d --name ipfs_host -v /tmp/ipfs-docker-staging:/export -v /tmp/ipfs-docker-data:/data/ipfs -p 4000:4001 -p 4001:4001/udp -p 0.0.0.0:8080:8080 -p 0.0.0.0:5001:5001 ipfs/kubo:latest", shell=True, stdout=output, stderr=output)
+    subprocess.call("docker run -d --name ipfs_host -v /tmp/ipfs-docker-staging:/export -v /tmp/ipfs-docker-data:/data/ipfs -p 4000:4001 -p 4001:4001/udp -p https://ipfs-for-private-document-production.up.railway.app/:8080:8080 -p https://ipfs-for-private-document-production.up.railway.app/:5001:5001 ipfs/kubo:latest", shell=True, stdout=output, stderr=output)
     subprocess.call("docker exec ipfs_host ipfs swarm peers", shell=True, stdout=output, stderr=output)
 
 db = SQLAlchemy(app)
@@ -132,7 +132,7 @@ def upload_file():
     f = request.files['file']
     if f.filename.endswith(('.png', '.jpg', '.jpeg', '.pdf', '.txt')):
       f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
-      api = ipfsapi.Client('0.0.0.0', 5001)
+      api = ipfsapi.Client('https://ipfs-for-private-document-production.up.railway.app/', 5001)
       res = api.add(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
       file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
       rows = db.session.query(UploadFile).count()
