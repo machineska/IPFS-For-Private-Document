@@ -9,10 +9,9 @@ RUN export COMPOSE_DOCKER_CLI_BUILD=0
 
 RUN mkdir /tmp/ipfs-docker-staging
 RUN mkdir /tmp/ipfs-docker-data
-RUN mkdir /tmp/upload
 
 CMD docker pull ipfs/kubo
-CMD docker run -d --name ipfs_host -v /tmp/ipfs-docker-staging:/export -v /tmp/ipfs-docker-data:/data/ipfs -p 4000:4001 -p 4001:4001/udp -p 127.0.0.1:8080:8080 -p 127.0.0.1:5001:5001 ipfs/kubo:latest
+CMD docker run -d --name ipfs_host -v /tmp/ipfs-docker-staging:/export -v /tmp/ipfs-docker-data:/data/ipfs -p 4000:4001 -p 4001:4001/udp -p 127.0.0.1:8080:8080 -p 0.0.0.0:5001:5001 ipfs/kubo:latest
 CMD docker exec ipfs_host swarm peers
 
 FROM python:3.10.8-slim-buster
