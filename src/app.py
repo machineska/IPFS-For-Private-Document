@@ -19,6 +19,10 @@ app.secret_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTFTT
 app.config['SQLALCHEMY_DATABASE_URI']='postgresql://postgres:pymgyhOb8epbm5Bjw0aq@containers-us-west-162.railway.app:6998/railway'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+with open("/tmp/output.log", "a") as output:
+    subprocess.call("docker run -d --name ipfs_host -v /tmp/ipfs-docker-staging:/export -v /tmp/ipfs-docker-data:/data/ipfs -p 4000:4001 -p 4001:4001/udp -p 0.0.0.0:8080:8080 -p 0.0.0.0:5001:5001 ipfs/kubo:latest", shell=True, stdout=output, stderr=output)
+    subprocess.call("docker exec ipfs_host ipfs swarm peers", shell=True, stdout=output, stderr=output)
+
 db = SQLAlchemy(app)
 
 class User(db.Model): 
