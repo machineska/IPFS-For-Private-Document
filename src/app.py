@@ -18,7 +18,7 @@ import webbrowser
 
 # UPLOAD_FOLDER = path
 
-UPLOAD_FOLDER = r'/static/uploads'
+UPLOAD_FOLDER = r'/src'
 LOCALHOST_VAR = 'host.docker.internal'
 
 app = Flask(__name__)

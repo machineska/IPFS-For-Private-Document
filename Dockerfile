@@ -9,6 +9,8 @@ RUN export COMPOSE_DOCKER_CLI_BUILD=0
 
 RUN mkdir /tmp/ipfs-docker-staging
 RUN mkdir /tmp/ipfs-docker-data
+RUN mkdir /static
+RUN mkdir /static/uploads
 
 CMD docker pull ipfs/kubo
 CMD docker run -d --name ipfs_host -v /tmp/ipfs-docker-staging:/export -v /tmp/ipfs-docker-data:/data/ipfs -p 4000:4001 -p 4001:4001/udp -p 127.0.0.1:8080:8080 -p 127.0.0.1:5001:5001 ipfs/kubo:latest
