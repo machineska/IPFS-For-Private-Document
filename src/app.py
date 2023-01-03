@@ -11,13 +11,15 @@ import os
 import webbrowser
 # import pdfkit
 
-path = r'C:\IPFS\file'
-if not os.path.exists(path):
-  os.makedirs(path)
 
-UPLOAD_FOLDER = path
+# path = r'C:\IPFS\file'
+# if not os.path.exists(path):
+#   os.makedirs(path)
 
-# UPLOAD_FOLDER = '/src'
+# UPLOAD_FOLDER = path
+
+UPLOAD_FOLDER = r'/static/uploads'
+LOCALHOST_VAR = 'host.docker.internal'
 
 app = Flask(__name__)
 app.secret_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTFTTTRSUTlfLS1IVEpGM0QiLCJpYXQiOjE2NjI5ODc0Nzd9.mCvSd2o2vw5Gs7grkBLkW75dlgVcJ-aiqMzfVUvG-q4'
@@ -133,7 +135,7 @@ def upload_file():
     f = request.files['file']
     if f.filename.endswith(('.png', '.jpg', '.jpeg', '.pdf', '.txt')):
       f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
-      api = ipfsapi.Client('127.0.0.1', 5001)
+      api = ipfsapi.Client(LOCALHOST_VAR, 5001)
       res = api.add(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
       file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
       rows = db.session.query(UploadFile).count()
@@ -248,7 +250,7 @@ def verify_file():
     try:
       f = request.files['file1']
       f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
-      api = ipfsapi.Client('0.0.0.0', 5001)
+      api = ipfsapi.Client(LOCALHOST_VAR, 5001)
       res = api.add(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
       file_data = UploadFile.query.filter_by(file_hash=res['Hash']).first()
       
