@@ -11,7 +11,13 @@ import os
 import webbrowser
 # import pdfkit
 
-UPLOAD_FOLDER = '/src'
+path = r'C:\IPFS\file'
+if not os.path.exists(path):
+  os.makedirs(path)
+
+UPLOAD_FOLDER = path
+
+# UPLOAD_FOLDER = '/src'
 
 app = Flask(__name__)
 app.secret_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTFTTTRSUTlfLS1IVEpGM0QiLCJpYXQiOjE2NjI5ODc0Nzd9.mCvSd2o2vw5Gs7grkBLkW75dlgVcJ-aiqMzfVUvG-q4'
